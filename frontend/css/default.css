@@ -1,0 +1,118 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #e6f6ca;
+}
+
+header {
+    width: 100%;
+    font-size: 250%;
+    font-family: serif;
+    text-align: center;
+    background-color: #d4ebaa;
+}
+
+fieldset {
+    font-size: large;
+    display: inline-block;
+    border-color: #6e9f1f;
+}
+
+form {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#input_table {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#input_table tr td,
+#input_table tr th {
+    padding: 8px;
+    text-align: left;
+}
+
+#input_table thead {
+    background-color: #869374;
+}
+
+#input_table tbody tr {
+    background-color: #a3c46e;
+}
+
+
+#input_table thead tr:hover,
+#input_table tbody tr:hover {
+    background-color: #465c21;
+    cursor: pointer;
+}
+
+.form-field input:focus {
+    outline: none;
+}
+
+input.error {
+    border-color: red;
+}
+
+input.success {
+    border-color: green;
+}
+
+small {
+    color: red;
+}
+
+input[type="submit"] {
+    width: 30%;
+    padding: 1em;
+    margin-top: 15px;
+    margin-left: 65px;
+    background: #cce79f;
+    border: 1px solid black;
+    color: black;
+    text-transform: uppercase;
+}
+
+input[type="submit"]:hover {
+    background: #6d8e35;
+    cursor: pointer;
+}
+
+input[type="submit"]:focus {
+    outline: none;
+}
+
+.data {
+    margin: 20px;
+    align-items: flex-start;
+    display: flex;
+}
+
+.left_data {
+    margin-left: 50px;
+    margin-right: 15px;
+    width: 800px;
+}
+
+.right_data #jxgbox {
+    width: 500px;
+    height: 300px;
+}
+
+.right_data {
+    width: 700px;
+}
+
+.invisible {
+    visibility: hidden;
+    position: absolute;
+    top: -9999px;
+}
+
+.visible {
+    visibility: visible;
+    position: static;
+}

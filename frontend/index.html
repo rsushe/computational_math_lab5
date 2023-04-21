@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Вычмат №4</title>
+    <meta charset="UTF-8">
+
+    <link href="css/default.css" rel="stylesheet">
+    <link href="css/toggle.css" rel="stylesheet">
+
+    <script type="text/javascript" charset="UTF-8"
+            src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css"/>
+
+    <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="js/validate.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/graph.js"></script>
+    <script src="js/main.js"></script>
+</head>
+
+<body>
+<header>
+    <span>Сущенко Роман Витальевич, группа P32131</span>
+</header>
+<div class="data">
+    <div class="left_data">
+        <div>
+            <input class="input" id="toggle" type="checkbox">
+
+            <label class="label" for="toggle">
+                <div class="left">
+                    Ввести самому
+                </div>
+
+                <div class="switch">
+                    <span class="slider round"></span>
+                </div>
+
+                <div class="right">
+                    Загрузить файл
+                </div>
+            </label>
+        </div>
+        <div>
+            <form id="form">
+                <div class="form_table visible" id="form_table">
+                    <span>Введите количество точек в исходных данных:</span>
+                    <input type="number" id="quantity" min="8" max="12" value="8">
+                    <br>
+                    <table id="input_table">
+                        <thead>
+                            <tr>
+                                <th>X</th>
+                                <th>Y</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <small></small>
+                    <div>
+                        <input type="submit" id="submit" value="Submit">
+                    </div>
+                </div>
+                <div class="form_button invisible" id="form_button">
+                    <span style="margin-bottom: 20px;">Выберите файл с исходными данными:</span>
+                    <br>
+                    <input type="file" id="file" accept="text/plain" style="margin-top: 10px;">
+                    <br>
+                    <small></small>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+    <div class="right_data">
+        <!-- graph div -->
+        <div id="jxgbox" class="jxgbox">
+        </div>
+        <div>
+            <h2>
+                <span>Лучшая аппроксимирующая функция: </span>
+                <span id="result"></span>
+            </h2>
+            <h2>
+                <span>f(x): </span>
+                <span id="function"></span>
+            </h2>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>
