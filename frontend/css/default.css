@@ -65,23 +65,51 @@ small {
     color: red;
 }
 
+.btn {
+  width: 25%;
+  padding: 1em;
+  margin-top: 15px;
+  background: #cce79f;
+  border: 1px solid black;
+  color: black;
+  text-transform: uppercase;
+}
+
+.selected {
+    background: #6d8e35
+}
+
+select {
+    width: 15%;
+    margin-bottom: 5px;
+    border: 1px solid black;
+    color: black;
+}
+
+.form_func input[type="number"] {
+    width: 10%;
+    margin-bottom: 5px;
+    border: 1px solid black;
+    color: black;
+}
+
 input[type="submit"] {
     width: 30%;
     padding: 1em;
     margin-top: 15px;
-    margin-left: 65px;
+    margin-left: 40px;
     background: #cce79f;
     border: 1px solid black;
     color: black;
     text-transform: uppercase;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover, button:hover {
     background: #6d8e35;
     cursor: pointer;
 }
 
-input[type="submit"]:focus {
+input[type="submit"]:focus, button:focus {
     outline: none;
 }
 

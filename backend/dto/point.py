@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
 
-class PointDTO(BaseModel):
+class Point(BaseModel):
     x: float
     y: float

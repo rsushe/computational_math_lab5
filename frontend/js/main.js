@@ -10,34 +10,75 @@ function createTableWithNRows(n) {
 }
 
 function parseTable() {
-    points = []
+    let points = []
     let cells = document.getElementById("input_table").querySelectorAll("input");
 
+    let point;
     for (let i = 0; i < cells.length; i += 2) {
-        point = {}
-        point.x = parseFloat(cells[i].value.replace(',', '.'))
-        point.y = parseFloat(cells[i + 1].value.replace(',', '.'))
+        point = {};
+        point.x = parseFloat(cells[i].value.replace(',', '.'));
+        point.y = parseFloat(cells[i + 1].value.replace(',', '.'));
 
-        points.push(point)
+        points.push(point);
     }
 
-    return points
+    return points;
 }
 
 function parseFile(file_data) {
-    points = []
+    let points = []
 
-    lines = file_data.split("\r\n");
+    let lines = file_data.split("\n");
 
     lines.forEach((line) => {
-        split_line = line.split(" ");
+        let split_line = line.split(" ");
 
-        point = {}
-        point.x = parseFloat(split_line[0].replace(',', '.'))
-        point.y = parseFloat(split_line[1].replace(',', '.'))
+        let point = {};
+        point.x = parseFloat(split_line[0].replace(',', '.'));
+        point.y = parseFloat(split_line[1].replace(',', '.'));
 
-        points.push(point)
+        points.push(point);
     });
+
+    return points;
+}
+
+function parseFunc() {
+    let funcStr = $("option:selected").text();
+    let func;
+
+    console.log(funcStr);
+
+    switch (funcStr) {
+        case "sin(x)":
+            func = x => Math.sin(x);
+            break;
+        case "x^2 + x":
+            func = x => x * x + x;
+            break;
+        default:
+            func = x => x;
+            break;
+    }
+
+    let points = []
+
+    const start = parseInt($("#start").val()), end = parseInt($("#end").val()),
+        number_of_points = parseInt($("#points").val());
+
+    let step = (end - start) / (number_of_points - 1), currentX = start;
+
+    for (let i = 0; i < number_of_points; i++) {
+        let point = {};
+        point.x = currentX;
+        point.y = func(currentX);
+
+        currentX += step;
+
+        points.push(point);
+    }
+
+    console.log(points);
 
     return points;
 }
@@ -52,78 +93,72 @@ function setElementVisibilityTo(element, isVisible) {
     }
 }
 
-function getFunction(data) {
-    switch (data.best_approximation) {
-        case "linear":
-            return x => data.linear[0] + data.linear[1] * x;
-        case "square":
-            return x => data.square[0] + data.square[1] * x + data.square[2] * Math.pow(x, 2);
-        case "cubic":
-            return x => data.cubic[0] + data.cubic[1] * x + data.cubic[2] * Math.pow(x, 2) + data.cubic[3] * Math.pow(x, 3);
-        case "exponential":
-            return x => data.exponential[0] * Math.exp(data.exponential[1] * x);
-        case "logarithmic":
-            return x => data.logarithmic[0] * Math.log(x) + data.logarithmic[1];
-        case "power":
-            return x => data.power[0] * Math.pow(x, data.power[1])
-    }
-}
-
-function getFunctionTextRepresentation(data) {
-    switch (data.best_approximation) {
-        case "linear":
-            return data.linear[0] + " + " + data.linear[1] + " * x";
-        case "square":
-            return data.square[0] + " + " + data.square[1] + " * x + " + data.square[2] + " * x ^ 2";
-        case "cubic":
-            return data.cubic[0] + " + " + data.cubic[1] + " * x + " + data.cubic[2] + " * x ^ 2 + " + data.cubic[3] + " * x ^ 3";
-        case "exponential":
-            return data.exponential[0] + " * e ^ (x * " + data.exponential[1] + ")";
-        case "logarithmic":
-            return data.logarithmic[0] + " * ln(x) + " + data.logarithmic[1];
-        case "power":
-            return data.power[0] + " * x ^ " + data.power[1];
-    }
-}
-
-function getTypeTextRepresentation(data) {
-    switch (data.best_approximation) {
-        case "linear":
-            return "линейная";
-        case "square":
-            return "квадратичная";
-        case "cubic":
-            return "кубическая";
-        case "exponential":
-            return "экспоненциальная";
-        case "logarithmic":
-            return "логарифмическая";
-        case "power":
-            return "степенная"
-    }
-}
-
 function draw_points(board, points) {
     points.forEach((point) => {
-        board.create("point", [point.x, point.y], {fixed:true});
+        board.create("point", [point.x, point.y], {fixed: true});
     });
 }
 
-function submitForm(board, points) {
+function getLagrangeFunc(lagrange_coef, points) {
+    return x => {
+        const n = lagrange_coef.length;
+        let result = 0;
+        for (let i = 0; i < n; i++) {
+            let product = 1;
+            for (let j = 0; j < n; j++) {
+                if (i !== j) {
+                    product *= (x - points[j].x);
+                }
+            }
+            result += lagrange_coef[i] * product;
+        }
+        return result;
+    }
+}
+
+function fact(x) {
+    if (x === 0) {
+        return 1;
+    }
+    return x * fact(x - 1);
+}
+
+function getNewtonFunc(newton_coef, points) {
+    return x => {
+        const n = newton_coef.length, h = points[1].x - points[0].x;
+        let result = points[0].y;
+
+        for (let i = 0; i < n; i++) {
+            let product = 1;
+            for (let j = 0; j <= i; j++) {
+                product *= (x - points[j].x);
+            }
+            result += newton_coef[i] * product / (fact(i + 1) * Math.pow(h, i + 1));
+        }
+
+        return result;
+    }
+}
+
+function submitForm(board, points, target_x) {
+
+    console.log(JSON.stringify(points))
+
     $.ajax({
         type: 'POST',
-        url: config.backendURL,
+        url: config.host + config.interpolation_endpoint,
         contentType: "application/json",
         data: JSON.stringify(points),
         dataType: 'json',
         success: (data) => {
             console.log(data);
 
-            min_x = points[0].x;
-            max_x = points[0].x;
 
-            min_y = points[0].y;
-            max_y = points[0].y;
+            let min_x = points[0].x;
+            let max_x = points[0].x;
+
+            let min_y = points[0].y;
+            let max_y = points[0].y;
 
             points.forEach((point) => {
                 min_x = Math.min(min_x, point.x);
@@ -133,16 +168,22 @@ function submitForm(board, points) {
                 max_y = Math.max(max_y, point.y);
             });
 
-            board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [min_x - 1, max_y + 1, max_x + 1, min_y - 1], axis: true, showCopyright: false});
-        
-            functionRule = getFunction(data);
+            board = JXG.JSXGraph.initBoard('jxgbox', {
+                boundingbox: [min_x - 5, max_y + 5, max_x + 5, min_y - 5],
+                axis: true,
+                showCopyright: false
+            });
 
-            board.create('functiongraph',[functionRule, min_x, max_x]);
+            let lagrangeFunc = getLagrangeFunc(data.lagrange_coefficients, points);
+            let newtonFunc = getNewtonFunc(data.newton_coefficients, points);
+
+            board.create('functiongraph', [lagrangeFunc, min_x, max_x]);
+            board.create('functiongraph', [newtonFunc, min_x, max_x], {strokecolor:'red'});
 
             draw_points(board, points);
 
-            $(".right_data #result").html(getTypeTextRepresentation(data));
-            $(".right_data #function").html(getFunctionTextRepresentation(data));
+            $("#lagrange").text(lagrangeFunc(target_x));
+            $("#newton").text(newtonFunc(target_x));
         }
     });
 }
@@ -150,7 +191,17 @@ function submitForm(board, points) {
 $(document).ready(() => {
     let board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-6, 6, 6, -6], axis: true, showCopyright: false});
 
-    let isReadingFile = false;
+    let file_data = "";
+
+    let table = document.getElementById("form_table");
+    let file = document.getElementById("form_file");
+    let func = document.getElementById("form_func");
+
+    let table_btn = document.getElementById("btn_table");
+    let file_btn = document.getElementById("btn_file");
+    let func_btn = document.getElementById("btn_func");
+
+    let selected_type = "table";
 
     createTableWithNRows($(".left_data #quantity").val())
 
@@ -160,20 +211,40 @@ $(document).ready(() => {
         }
     });
 
-    $(".left_data #toggle").click(() => {
-        isReadingFile = !isReadingFile;
+    $(".left_data #btn_table").click(() => {
+        selected_type = "table";
 
-        table = document.getElementById("form_table")
-        button = document.getElementById("form_button")
+        setElementVisibilityTo(table, true);
+        setElementVisibilityTo(file, false);
+        setElementVisibilityTo(func, false);
 
-        if (isReadingFile) {
-            setElementVisibilityTo(table, false);
-            setElementVisibilityTo(button, true);
-        } else {
-            setElementVisibilityTo(table, true);
-            setElementVisibilityTo(button, false);
-        }
-        console.log($(".left_data #toggle").is(":checked"));
+        table_btn.classList.add("selected");
+        file_btn.classList.remove("selected");
+        func_btn.classList.remove("selected");
+    });
+
+    $(".left_data #btn_file").click(() => {
+        selected_type = "file";
+
+        setElementVisibilityTo(table, false);
+        setElementVisibilityTo(file, true);
+        setElementVisibilityTo(func, false);
+
+        table_btn.classList.remove("selected");
+        file_btn.classList.add("selected");
+        func_btn.classList.remove("selected");
+    });
+
+    $(".left_data #btn_func").click(() => {
+        selected_type = "func";
+
+        setElementVisibilityTo(table, false);
+        setElementVisibilityTo(file, false);
+        setElementVisibilityTo(func, true);
+
+        table_btn.classList.remove("selected");
+        file_btn.classList.remove("selected");
+        func_btn.classList.add("selected");
     });
 
     $(".left_data #file").change((event) => {
@@ -182,30 +253,60 @@ $(document).ready(() => {
         reader.addEventListener(
             "load",
             () => {
-                let file_data = reader.result;
-                console.log(file_data)
-                if (validate_file_data(file_data)) {
-                    console.log("file here");
-                    submitForm(board, parseFile(file_data));
-                }
+                file_data = reader.result;
+                console.log(file_data);
             },
             false
         );
 
         const fileList = event.target.files;
-      
+
         if (fileList.length > 0) {
             reader.readAsText(fileList[0]);
         }
-
-        $(".left_data #file")[0].value = '';
-      });
-
-    $('#form #submit').click((event) => {
-        if (validate_form()) {
-            submitForm(board, parseTable());
-        }
-        event.preventDefault();
     });
 
+    $('#form #submit').click((event) => {
+        console.log(selected_type)
+
+        let points;
+
+        switch (selected_type) {
+            case "table":
+                if (validate_form_table()) {
+                    points = parseTable();
+                    break;
+                }
+                event.preventDefault();
+                return;
+            case "file":
+                if (validate_form_file(file_data)) {
+                    points = parseFile(file_data);
+                    break;
+                }
+                event.preventDefault();
+                return;
+            case "func":
+                if (validate_form_func()) {
+                    points = parseFunc();
+                    break;
+                }
+                event.preventDefault();
+                return;
+        }
+
+        console.log("success validation " + selected_type)
+
+        let target_x = parseFloat($("#target").val());
+
+        console.log(points, target_x);
+
+        submitForm(board, points, target_x);
+
+        if (selected_type === "file") {
+            $(".left_data #file")[0].value = '';
+        }
+
+        event.preventDefault();
+    });
 });
