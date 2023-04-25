@@ -3,9 +3,9 @@ from typing import List
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from dto.approximation_result_dto import ApproximationResultDTO
-from dto.point_dto import PointDTO
-from service.approximation_service import approximate
+from dto.interpolation_response import InterpolationResponse
+from dto.point import Point
+from service.interpolation_service import interpolate
 
 app = FastAPI()
 
@@ -20,10 +20,15 @@ app.add_middleware(
 )
 
 
-@app.post("/approximate", response_model=ApproximationResultDTO)
-async def root(points: List[PointDTO]):
+@app.get("/ping")
+async def root():
+    return "pong"
+
+
+@app.post("/interpolate", response_model=InterpolationResponse)
+async def root(points: List[Point]):
     print(points)
 
-    approximation_result: ApproximationResultDTO = approximate(points)
+    interpolation_result: InterpolationResponse = interpolate(points)
 
-    return approximation_result
+    return interpolation_result
